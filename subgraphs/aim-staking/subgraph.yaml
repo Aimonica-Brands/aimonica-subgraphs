@@ -14,8 +14,23 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
+        - Project
+        - User
+        - Stake
       abis:
         - name: AimStaking
           file: ./abis/AimStaking.json
       eventHandlers:
+        - event: ProjectRegistered(bytes32)
+          handler: handleProjectRegistered
+        - event: ProjectUnregistered(bytes32)
+          handler: handleProjectUnregistered
+        - event: Staked(uint256,indexed address,uint256,indexed bytes32,uint256)
+          handler: handleStaked
+        - event: Unstaked(uint256,indexed address,uint256)
+          handler: handleUnstaked
+        - event: EmergencyUnstaked(uint256,indexed address,uint256)
+          handler: handleEmergencyUnstaked
+        - event: ProjectStakingTokenSet(indexed bytes32,address)
+          handler: handleProjectStakingTokenSet
       file: ./src/mapping.ts

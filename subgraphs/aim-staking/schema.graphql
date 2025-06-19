@@ -1,0 +1,36 @@
+enum StakeStatus {
+  Active
+  Unstaked
+  EmergencyUnstaked
+}
+
+type Project @entity {
+  id: Bytes! # projectId
+  stakingToken: Bytes
+  registered: Boolean!
+  stakes: [Stake!]! @derivedFrom(field: "project")
+  totalStaked: BigInt!
+  createdAt: BigInt!
+  transactionHash: Bytes!
+}
+
+type User @entity {
+  id: Bytes! # user address
+  stakes: [Stake!]! @derivedFrom(field: "user")
+  totalStaked: BigInt!
+  activeStakeCount: BigInt!
+}
+
+type Stake @entity {
+  id: ID! # stakeId
+  stakeId: BigInt!
+  user: User!
+  project: Project!
+  amount: BigInt!
+  stakingToken: Bytes!
+  stakedAt: BigInt!
+  duration: BigInt!
+  unlockedAt: BigInt!
+  status: StakeStatus!
+  transactionHash: Bytes!
+}
