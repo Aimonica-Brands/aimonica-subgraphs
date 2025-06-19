@@ -1,0 +1,16 @@
+{
+  "name": "aim-staking-subgraph",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build"
+  },
+  "author": "AIM-TEAM",
+  "license": "MIT",
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.71.0",
+    "@graphprotocol/graph-ts": "0.35.1"
+  }
+}

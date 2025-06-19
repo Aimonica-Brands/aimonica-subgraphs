@@ -1,0 +1,21 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: AimStaking
+    network: base # Replace with actual network
+    source:
+      address: "0xed1B25e98233d138A49ACe801474dA486704F9D5" # Replace with actual contract address
+      abi: AimStaking
+      startBlock: 320463558 # Replace with actual start block
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+      abis:
+        - name: AimStaking
+          file: ./abis/AimStaking.json
+      eventHandlers:
+      file: ./src/mapping.ts
