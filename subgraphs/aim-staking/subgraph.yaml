@@ -6,9 +6,9 @@ dataSources:
     name: AimStaking
     network: base # Replace with actual network
     source:
-      address: "0x990BA617d7E7Ae3edE6318d9E85F851035B8323C" # Replace with actual contract address
+      address: "0x29ecDC454121184C5F06E0f067ae11aA2d43184f" # Replace with actual contract address
       abi: AimStaking
-      startBlock: 31519284 # Replace with actual start block
+      startBlock: 31928106 # Replace with actual start block
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
