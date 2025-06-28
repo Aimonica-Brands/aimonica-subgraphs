@@ -10,7 +10,7 @@
   "author": "AIM-TEAM",
   "license": "MIT",
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.71.0",
-    "@graphprotocol/graph-ts": "0.35.1"
+    "@graphprotocol/graph-cli": "0.79.1",
+    "@graphprotocol/graph-ts": "0.38.1"
   }
 }
