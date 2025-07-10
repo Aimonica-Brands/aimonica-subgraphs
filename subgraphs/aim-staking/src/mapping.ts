@@ -7,11 +7,12 @@ import {
   EmergencyUnstaked,
   ProjectStakingTokenSet
 } from "../generated/AimStaking/AimStaking";
-import { Project, User, Stake } from "../generated/schema";
+import { Project, User, Stake, ProjectUser } from "../generated/schema";
 
 export function handleProjectRegistered(event: ProjectRegistered): void {
   let project = new Project(event.params.projectId);
   project.totalStaked = BigInt.fromI32(0);
+  project.userCount = BigInt.fromI32(0);
   project.createdAt = event.block.timestamp;
   project.transactionHash = event.transaction.hash;
   project.registered = true;
@@ -43,10 +44,25 @@ export function handleStaked(event: Staked): void {
     // This should not happen if events are processed in order, but as a safeguard:
     project = new Project(projectId);
     project.totalStaked = BigInt.fromI32(0);
+    project.userCount = BigInt.fromI32(0);
     project.createdAt = event.block.timestamp;
     project.transactionHash = event.transaction.hash;
     project.registered = true; // Assume registered if we see a stake for it.
   }
+
+  let projectUserId = projectId.toHexString().concat("-").concat(userAddress.toHexString());
+  let projectUser = ProjectUser.load(projectUserId);
+  if (projectUser == null) {
+    projectUser = new ProjectUser(projectUserId);
+    projectUser.project = project.id;
+    projectUser.user = user.id;
+    projectUser.activeStakeCount = BigInt.fromI32(0);
+  }
+
+  if (projectUser.activeStakeCount.equals(BigInt.fromI32(0))) {
+    project.userCount = project.userCount.plus(BigInt.fromI32(1));
+  }
+  projectUser.activeStakeCount = projectUser.activeStakeCount.plus(BigInt.fromI32(1));
 
   let stake = new Stake(stakeId);
   stake.stakeId = event.params.stakeId;
@@ -75,6 +91,7 @@ export function handleStaked(event: Staked): void {
   stake.save();
   user.save();
   project.save();
+  projectUser.save();
 }
 
 export function handleUnstaked(event: Unstaked): void {
@@ -82,7 +99,6 @@ export function handleUnstaked(event: Unstaked): void {
   let stake = Stake.load(stakeId);
   if (stake) {
     stake.status = "Unstaked";
-    stake.save();
 
     let user = User.load(stake.user);
     if (user) {
@@ -94,8 +110,19 @@ export function handleUnstaked(event: Unstaked): void {
     let project = Project.load(stake.project);
     if (project) {
       project.totalStaked = project.totalStaked.minus(stake.amount);
+
+      let projectUserId = project.id.toHexString().concat("-").concat(stake.user.toHexString());
+      let projectUser = ProjectUser.load(projectUserId);
+      if (projectUser) {
+        projectUser.activeStakeCount = projectUser.activeStakeCount.minus(BigInt.fromI32(1));
+        if (projectUser.activeStakeCount.equals(BigInt.fromI32(0))) {
+          project.userCount = project.userCount.minus(BigInt.fromI32(1));
+        }
+        projectUser.save();
+      }
       project.save();
     }
+    stake.save();
   }
 }
 
@@ -104,7 +131,6 @@ export function handleEmergencyUnstaked(event: EmergencyUnstaked): void {
   let stake = Stake.load(stakeId);
   if (stake) {
     stake.status = "EmergencyUnstaked";
-    stake.save();
 
     let user = User.load(stake.user);
     if (user) {
@@ -116,8 +142,19 @@ export function handleEmergencyUnstaked(event: EmergencyUnstaked): void {
     let project = Project.load(stake.project);
     if (project) {
       project.totalStaked = project.totalStaked.minus(stake.amount);
+
+      let projectUserId = project.id.toHexString().concat("-").concat(stake.user.toHexString());
+      let projectUser = ProjectUser.load(projectUserId);
+      if (projectUser) {
+        projectUser.activeStakeCount = projectUser.activeStakeCount.minus(BigInt.fromI32(1));
+        if (projectUser.activeStakeCount.equals(BigInt.fromI32(0))) {
+          project.userCount = project.userCount.minus(BigInt.fromI32(1));
+        }
+        projectUser.save();
+      }
       project.save();
     }
+    stake.save();
   }
 }
 

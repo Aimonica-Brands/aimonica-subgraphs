@@ -10,6 +10,8 @@ type Project @entity {
   registered: Boolean!
   stakes: [Stake!]! @derivedFrom(field: "project")
   totalStaked: BigInt!
+  userCount: BigInt!
+  projectUsers: [ProjectUser!]! @derivedFrom(field: "project")
   createdAt: BigInt!
   transactionHash: Bytes!
 }
@@ -17,6 +19,7 @@ type Project @entity {
 type User @entity {
   id: Bytes! # user address
   stakes: [Stake!]! @derivedFrom(field: "user")
+  projectUsers: [ProjectUser!]! @derivedFrom(field: "user")
   totalStaked: BigInt!
   activeStakeCount: BigInt!
 }
@@ -33,4 +36,11 @@ type Stake @entity {
   unlockedAt: BigInt!
   status: StakeStatus!
   transactionHash: Bytes!
+}
+
+type ProjectUser @entity {
+  id: ID! # projectId + "-" + userId
+  project: Project!
+  user: User!
+  activeStakeCount: BigInt!
 }
